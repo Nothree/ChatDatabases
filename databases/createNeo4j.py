@@ -1,23 +1,31 @@
 import mysql.connector
 from py2neo import Graph
+from dotenv import load_dotenv, find_dotenv
+import os
 
+_ = load_dotenv(find_dotenv())
+
+neo4j_user = os.getenv("neo4j_user")
+neo4j_password = os.getenv("neo4j_password")
 # 连接到Neo4j数据库
-graph = Graph("bolt://localhost:7687", user="neo4j", password="jx880918")
+graph = Graph("bolt://localhost:7687", user=neo4j_user, password=neo4j_password)
 #清空neo4j数据库
 query = "MATCH (n) DETACH DELETE n"
 graph.run(query)
 
-# port = 33062
-# host = "113.66.113.0"
 port = 3306
-host = "192.168.0.118"
+mysql_host = os.getenv("mysql_host")
+mysql_user = os.getenv("mysql_user")
+mysql_password = os.getenv("mysql_password")
+mysql_database = os.getenv("mysql_database")
+mysql_database_conf = os.getenv("mysql_database_conf")
 # 建立数据库连接
 conn = mysql.connector.connect(
-    host=host,  # 数据库主机地址
-    user="root",  # 数据库用户名
+    host=mysql_host,  # 数据库主机地址
+    user=mysql_user,  # 数据库用户名
     port=port,
-    password="broadtech",  # 数据库密码
-    database="chatiot"  # 数据库名称
+    password=mysql_password,  # 数据库密码
+    database=mysql_database  # 数据库名称
 )
 # 创建游标对象
 cursor = conn.cursor()
@@ -83,11 +91,11 @@ conn.close()
 #构建表的血缘关系知识图谱
 # 建立数据库连接
 conn = mysql.connector.connect(
-    host=host,  # 数据库主机地址
-    user="root",  # 数据库用户名
+    host=mysql_host,  # 数据库主机地址
+    user=mysql_user,  # 数据库用户名
     port=port,
-    password="broadtech",  # 数据库密码
-    database="chatiot_conf"  # 数据库名称
+    password=mysql_password,  # 数据库密码
+    database=mysql_database_conf  # 数据库名称
 )
 # 创建游标对象
 cursor = conn.cursor()

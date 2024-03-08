@@ -7,12 +7,21 @@ import re
 from py2neo import Graph
 import json
 import logging_config
+from dotenv import load_dotenv, find_dotenv
+import os
 
+_ = load_dotenv(find_dotenv())
 
 class AskToPrompt:
     def __init__(self):
-        self.graph = Graph("bolt://localhost:7687", user="neo4j", password="jx880918")
-        self.mysqlConn = MysqlConnect(host="192.168.0.118", user="root", password="broadtech", database="chatiot_conf")
+        self.mysql_host = os.getenv("mysql_host")
+        self.mysql_database_conf = os.getenv("mysql_database_conf")
+        self.mysql_user = os.getenv("mysql_user")
+        self.mysql_password = os.getenv("mysql_password")
+        self.neo4j_password = os.getenv("neo4j_password")
+        self.neo4j_user = os.getenv("neo4j_user")
+        self.graph = Graph("bolt://localhost:7687", user=self.neo4j_user, password=self.neo4j_password)
+        self.mysqlConn = MysqlConnect(host=self.mysql_host, user=self.mysql_user, password=self.mysql_password, database=self.mysql_database_conf)
 
     def close_mysql(self):
         self.mysqlConn.close()
@@ -98,7 +107,7 @@ class AskToPrompt:
         table_contain_field = self.__get_table_contain_field(results, user_question)
 
         # 提取表名称
-        query = "SELECT DISTINCT name FROM table_regular"
+        query = "SELECT DISTINCT table_name, comment FROM table_regular"
         results = self.mysqlConn.query(query)
         # 将user question与表列表进行正则表达式匹配
         question_table_names = self.__get_table_name(results, user_question)
